@@ -11,7 +11,7 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
     - Quality filtering (`filtlong`)
     - Length filtering (`filtlong`)
 3. Read mapping/alignment
-    - `minimap2`
+    - `minimap2` (preferred)
     - `LRA`
     - `NGMLR`
     - `vulcan`
