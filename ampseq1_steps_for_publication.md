@@ -238,7 +238,7 @@ parallel -j 2 "run_clair3.sh \
 working_dir=$(echo "/Volumes/archive/macknightlab/sequencing_data/nanopore_ampseq_data_all_0623/fq_all_75perc")
 ref=$(echo "$working_dir/ref/flowering_genes_kyuss.fasta")
 
-hapasm_dir=$(echo "${working_dir}/haplotype_assembly_050923")
+hapasm_dir=$(echo "${working_dir}/haplotype_assembly")
 mkdir -p $hapasm_dir
 
 ## Alternatively, grep -i "^>" $ref > $working_dir/ref/seq_ids.txt can also be used
