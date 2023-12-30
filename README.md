@@ -39,5 +39,5 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
     - `seqtk`
 
 ## Protocol
-All steps of the protocol are in the markdown file.
+All steps of the protocol are in the markdown file `haplotype_assembly_protocol.md`.
 
