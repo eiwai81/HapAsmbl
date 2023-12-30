@@ -225,26 +225,6 @@ parallel -j 2 "run_clair3.sh \
 --no_phasing_for_fa \
 --use_whatshap_for_final_output_phasing" :::: $seq_ids :::: barcode_list.txt
 
-#2 CO, CO9
-parallel -j 2 "run_clair3.sh \
---bam_fn=${working_dir}/bam/{2}/{2}_clip.bam \
---ref_fn=${ref} \
---threads=2 \
---platform=${platform} \
---model_path=${model_path} \
---output=${working_dir}/variant_analysis/snvs_per_gene/{1}/{2} \
---include_all_ctgs \
---sample_name={2} \
---bed_fn=${bed_path}/{1}.region.bed \
---gvcf \
---chunk_size=25000 \
---var_pct_full=1 \
---ref_pct_full=1 \
---print_ref_calls \
---snp_min_af=0.01 \
---no_phasing_for_fa \
---use_whatshap_for_final_output_phasing" ::: CO CO9 :::: ampseq3.barcode_list.txt
-
 ```
 
 ##### Module 3
