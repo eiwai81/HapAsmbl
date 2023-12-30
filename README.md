@@ -1,5 +1,5 @@
 # HapAsm (Haplotype Assembly)
-Protocol for assembling alleles from multilocus long-read amplicon sequence data. This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for any diploid species. It is reference-aided which implies that there is reference sequence of the amplicons of interest.
+Protocol for assembling alleles from multilocus long-read amplicon sequence data. This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
 
 ## Summary of steps
 1. Generate reads using gene-specific primers
