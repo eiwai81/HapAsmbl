@@ -265,19 +265,6 @@ ${working_dir}/haplotype_assembly/{2}/{1}/{1}_{2}.sort.bam \
 --internal-downsampling 23 \
 --distrust-genotypes" :::: barcode_list.txt :::: $seq_ids
 
-parallel -j 4 "whatshap phase \
--o $hapasm_dir/per_gene/{2}/{1}/{1}_{2}.phased.vcf.gz \
---reference ${ref} \
---tag HP \
-${working_dir}/variant_analysis/snvs_per_gene/{2}/{1}/merge_output.vcf.gz \
-${working_dir}/haplotype_assembly/{2}/{1}/{1}_{2}.sort.bam \
---indels \
---sample {1} \
---ignore-read-groups \
---internal-downsampling 23 \
---distrust-genotypes" :::: ampseq3.barcode_list.txt ::: CO CO9
-
-
 # b. Index phased compressed vcf.gz file
 parallel "tabix -f -p vcf $hapasm_dir/per_gene/{2}/{1}/{1}_{2}.phased.vcf.gz" :::: barcode_list.txt ::: VRN1
 
