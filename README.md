@@ -16,8 +16,9 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 
 NOTE: Any of the long-read mappers above can be used. However, minimap2 was used because it was fast and compatible with Clair3 and structural variant callers.
 
-4. Depth normalization (OPTIONAL)
-    - samtools
+4. Removal of chimeric reads or concatemers
+    - bbmap (preferred)
+    - samclip
 5. SNPs/indel variant calling
     - Longshot - Haplotype-aware variant caller. Calls onls SNPs.
     - Clair3 - Preferred because it also calls indels.
