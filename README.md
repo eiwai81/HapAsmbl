@@ -39,10 +39,5 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
     - `seqtk`
 
 ## Protocol
-### 2. Pre-assembly processing steps
-####  2a. Re-basecalling
+All steps of the protocol are in the markdown file.
 
-
-```
-sdfsdfsdfsdf
-```
