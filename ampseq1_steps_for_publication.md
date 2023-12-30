@@ -249,7 +249,6 @@ seq_ids=$(echo "$working_dir/ref/seq_ids.txt")
 
 # make directory for each gene with sub-directory for each sample
 parallel "mkdir -p $hapasm_dir/per_gene/{1}/{2}" :::: $seq_ids :::: barcode_list.txt
-parallel "mkdir -p $hapasm_dir/per_gene/{1}/{2}" ::: CO CO9 :::: ampseq3.barcode_list.txt
 
 # a. Phasing VCFs and haplotagging reads 
 # whatshap to phase SNPs and indels
