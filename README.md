@@ -8,10 +8,11 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
     - Read splitting at in-read adapters
     - Quality filtering
     - Length filtering
-3. Read mapping/alignment - Minimap2
+3. Read mapping/alignment
+    - Minimap2
     - LRA
     - NGMLR
-    - Vulcan*
+    - Vulcan
 
 NOTE: Any of the long-read mappers above can be used. However, minimap2 was used because it was fast and compatible with Clair3 and structural variant callers.
 
@@ -24,3 +25,15 @@ NOTE: Any of the long-read mappers above can be used. However, minimap2 was used
     - SVIM
     - cuteSV (preferred)
     - sniffles2 
+7. Read-based phasing of genetic variants into haplotypes
+    - whatshap
+8. Cluster unmapped reads into haplotypes
+    - whatshap
+    - seqkit
+9. Generate consensus of reads from each haplotype cluster
+    - SPOA
+10. Polish consensus with reads
+    - Flye
+11. Trim head and tail cropping (OPTIONAL)
+    - seqtk
+
