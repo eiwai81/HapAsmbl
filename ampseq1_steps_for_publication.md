@@ -265,7 +265,7 @@ ${working_dir}/haplotype_assembly/{2}/{1}/{1}_{2}.sort.bam \
 --distrust-genotypes" :::: barcode_list.txt :::: $seq_ids
 
 # b. Index phased compressed vcf.gz file
-parallel "tabix -f -p vcf $hapasm_dir/per_gene/{2}/{1}/{1}_{2}.phased.vcf.gz" :::: barcode_list.txt ::: VRN1
+parallel "tabix -f -p vcf $hapasm_dir/per_gene/{2}/{1}/{1}_{2}.phased.vcf.gz" :::: barcode_list.txt :::: $seq_ids
 
 ```
 
