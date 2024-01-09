@@ -33,7 +33,7 @@ parallel -j 4 \
     -x 'cuda:all'" ::: barcode{01..12}
 ```
 
-5. Combine all re-basecalled reads per barcode into a single file
+4. Combine all re-basecalled reads per barcode into a single file
 
 ```bash
 # Optional: Create new directory to hold concatenated fastq file per barcode
