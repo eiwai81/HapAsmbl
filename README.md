@@ -6,7 +6,7 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 conda create --name hapasm --file hapasmbl_packages.txt
 conda activate hapasm
 ```
-## Summary of steps
+## Summary of workflow
 1. Generate reads using gene-specific primers
 2. Pre-assembly processing steps
     - Re-basecalling
