@@ -49,4 +49,6 @@ parallel -j 1 echo "{} >> sample_ids.txt" ::: barcode{01..96}
 
 cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ref/CO.fasta -f {1}_filt.fastq.gz -o results_test -b {1} -t 8"
 ```
+## Output folder
+Final assemblies are located in `results_test/per_gene/CO/barcode106/assm/barcode106.CO.h1.fasta` and `results_test/per_gene/CO/barcode106/assm/barcode106.CO.h2.fasta`.
 
