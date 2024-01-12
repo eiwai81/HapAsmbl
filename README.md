@@ -6,15 +6,11 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 2. Pre-assembly processing steps
     - Re-basecalling
         - `Guppy` (discontinued)
-        - `dorado`
     - Read splitting at in-read adapters (`porechop` and/or `duplex-tools`)
     - Quality filtering (`filtlong`)
     - Length filtering (`filtlong`)
 3. Read mapping/alignment
     - `minimap2` (preferred)
-    - `LRA`
-    - `NGMLR`
-    - `vulcan`
 
 **NOTE**: 
 
