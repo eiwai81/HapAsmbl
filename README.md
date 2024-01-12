@@ -18,7 +18,6 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
 
 4. Removal of chimeric reads or concatemers
     - `bbmap` (preferred)
-    - `samclip`
 5. SNPs/indel variant calling
     - `longshot` - Haplotype-aware variant caller. Calls onls SNPs.
     - `clair3` - Preferred because it also calls indels.
