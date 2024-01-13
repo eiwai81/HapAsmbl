@@ -7,22 +7,31 @@ conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 ```
 ## Summary of workflow
-1. Generate reads using gene-specific primers
-2. Pre-assembly processing steps
-    - Re-basecalling
-        - `Guppy` (discontinued)
-    - Read splitting at in-read adapters (`porechop` and/or `duplex-tools`)
-    - Quality filtering (`filtlong`)
-    - Length filtering (`filtlong`)
-3. Read mapping/alignment
-    - `minimap2` (preferred)
+1. Read mapping and removal of concatemers
+ ```bash
+# Map with Minimap2
+minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${barcode_id}_filt.bam
 
-**NOTE**: 
+# Remove unmapped reads and concatemers
+## clipfilter=10 discards reads with more than 10 soft-clipped bases
+samtools view -h -F 2308 ${barcode_id}_filt.bam \
+| reformat.sh clipfilter=10 in=stdin.bam out=stdout.bam \
+| samtools sort > ${barcode_id}_clip.bam
 
-Any of the long-read mappers above can be used. However, `minimap2` was used because it was fast and compatible with `clair3` and structural variant callers.
+# Index bamfile
+samtools index ${barcode_id}_clip.bam
+```
+2. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_)
+```bash
+samtools view -h ${barcode_id}_clip.bam CO -o ${barcode_id}_CO.bam
 
-4. Removal of chimeric reads or concatemers
-    - `bbmap` (preferred)
+# Create a sorted and indexed bamfile
+samtools sort -o ${barcode_id}_CO.sort.bam ${barcode_id}_CO.bam
+samtools index ${barcode_id}_CO.sort.bam
+
+# remove unsorted bamfile
+rm ${barcode_id}_CO.bam
+```
 5. SNPs/indel variant calling
     - `clair3` - Preferred because it also calls indels.
 6. Read-based phasing of genetic variants into haplotypes
