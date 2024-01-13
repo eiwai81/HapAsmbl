@@ -38,10 +38,9 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
     - `seqtk`
 
 ## Protocol
-- All steps of the protocol are in the markdown file `haplotype_assembly_protocol.md`.
 - To run with example data:
 ```
-bash ./run_hapasmbl.sh -r ref/CO.fasta -f barcode106_filt.fastq.gz -o results_test -b barcode106 -t 8
+bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
 ```
 - To run on multiple samples (e.g. 96 samples):
 ```
