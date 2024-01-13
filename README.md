@@ -98,7 +98,7 @@ ${barcode_id}_CO.sort.bam
 ```
 7. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
 
-    Case 1 - Sample is homozygous reference allele (GT=0/0):
+    **Case 1 - Sample is homozygous reference allele (GT=0/0):**
 
     * The *.haplotag_list.tsv.gz* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
@@ -117,37 +117,33 @@ ${barcode_id}_CO.sort.bam
      seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} ${barcode_id}_CO.h2.fastq.gz
      ```
 
-2. Case 2 - Sample is homozygous for alternate allele (GT=1/1):
+   **Case 2 - Sample is homozygous for alternate allele (GT=1/1):**
 
    * Although the file isn't empty in this case, the halotype column contains ` none` values which indicates that this sample is **HOM_ALT**. If this is the case, the same steps as in **Case 1** are repeated to retrieve reads from homologous chromosomes.
 
-3. Case 3 - GT=0/1:
+   **Case 3 - GT=0/1:**
 
-   * The halotype column contains either H1 or H2 which represents the haplotype information of each read. 
+   * The halotype column in the _.haplotag_list.tsv.gz_ file contains either H1 or H2 which represents the haplotype information of each read. 
 
    * In this case, the  `whatshap split` program to get the read haplotypes as shown below.
 
      ```bash
      # Example syntax: whatshap split --output-h1 h1.fastq.gz --output-h2 h2.fastq.gz reads.fastq.gz haplotypes.txt
-     whatshap split \
-     --output-h1 $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.h1.fastq.gz \
-     --output-h2 $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.h2.fastq.gz \
-     $combined_fq/barcode03.trimmed.filt.fastq \
-     $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.haplotag_list.tsv.gz
-     
+     whatshap split --output-h1 ${barcode_id}_CO.h1.fastq.gz --output-h2 ${barcode_id}_CO.h2.fastq.gz ${fastq_file} ${barcode_id}_CO.haplotag_list.tsv.gz 
      ```
 
-A crude `in house` python script was used to automate this step. It can be provided on request. The script was run as shown below.
+A crude in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
 
 ```bash
-# For VRN1-VRN3, FT3, FTL9
-# split.py was placed in the $working_dir/scripts folder
-parallel -j 24 "python ./scripts/split_reads.py \
---region {1} \
---barcode_id {2} \
---haplotagged_bam_dir $hapasm_dir/per_gene_bam \
---fq_dir ./filtered \
-$hapasm_dir/per_gene_bam/{1}/{2}/{2}_{1}.haplotag_list.tsv.gz" ::: VRN1 :::: barcode_list.txt
+# Specify directory for clustering reads using the option -o
+
+python split_reads.py \
+-b ${barcode_id} \
+-r CO \
+-o path/to/output_dir \
+${barcode_id}_CO.haplotag_list.tsv.gz \
+${barcode_id}_CO.haplotagged.bam \
+${fastq_file}
 
 ```
 10.
