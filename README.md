@@ -1,7 +1,7 @@
 # HapAsmbl (Haplotype Assembly)
 Protocol for assembling alleles from multilocus long-read amplicon sequence data. This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
 ## Installation of packages with bioconda
-All packages (and versions) used in this workflow are explicitly listed in the _hapasmbl_packages.txt_ file. To install them, please use:
+All packages (and versions) used in this workflow are explicitly listed in the _hapasmbl_packages.txt_ file. To install them or replicate the environment that was used for this project, please use:
 ```bash
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
