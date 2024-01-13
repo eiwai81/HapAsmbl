@@ -12,8 +12,9 @@ conda activate hapasmbl
 reference="ref.fasta"
 fastq_file="bc01.fastq"
 barcode_id="bc01"
+threads=4
 ```
-2. Read mapping and removal of concatemers
+2. Read mapping and removal of concatemers - `minimap2`, `samtools` and, `bbmap reformat.sh`
 ```bash
 # Map with Minimap2
 minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${barcode_id}_filt.bam
@@ -27,8 +28,9 @@ samtools view -h -F 2308 ${barcode_id}_filt.bam \
 # Index bamfile
 samtools index ${barcode_id}_clip.bam
 ```
-3. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_)
+3. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_) - `samtools`
 ```bash
+# Extract alignments at CO
 samtools view -h ${barcode_id}_clip.bam CO -o ${barcode_id}_CO.bam
 
 # Create a sorted and indexed bamfile
@@ -38,25 +40,23 @@ samtools index ${barcode_id}_CO.sort.bam
 # remove unsorted bamfile
 rm ${barcode_id}_CO.bam
 ```
-4. Variant calling
+4. Variant calling - `clair3`
 ```bash
+# Set clair3 parameters
 platform="ont"
 model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
 
-# path to bed
-bed_path=$(echo "$(pwd)/ref")
-
-cat ${seq_ids} | parallel -j 1 "run_clair3.sh \
+# run clair3
+run_clair3.sh \
 --bam_fn=${barcode_id}_CO.sort.bam \
 --ref_fn=${reference} \
 --threads=${threads} \
 --platform=${platform} \
 --model_path=${model_path} \
---output=${hapasm_dir}/per_gene/{1}/${barcode_id} \
+--output=${barcode_id} \
 --include_all_ctgs \
 --sample_name=${barcode_id} \
---bed_fn=${bed_path}/{1}.region.bed \
---gvcf \
+--bed_fn=CO_region.bed \
 --chunk_size=25000 \
 --var_pct_full=1 \
 --ref_pct_full=1 \
