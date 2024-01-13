@@ -28,7 +28,7 @@ samtools view -h -F 2308 ${barcode_id}_filt.bam \
 # Index bamfile
 samtools index ${barcode_id}_clip.bam
 ```
-3. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_) - `samtools`
+3. Extract reads originating from a flowering gene e.g. _CO_ (_CONSTANS_) - `samtools`
 ```bash
 # Extract alignments at CO
 samtools view -h ${barcode_id}_clip.bam CO -o ${barcode_id}_CO.bam
