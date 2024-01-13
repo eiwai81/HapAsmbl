@@ -123,7 +123,7 @@ ${barcode_id}_CO.sort.bam
 
    * Although the file isn't empty in this case, the halotype column contains ` none` values which indicates that this sample is **HOM_ALT**. If this is the case, the same steps as in **Case 1** are repeated to retrieve reads from homologous chromosomes.
 
-   **Case 3 - GT=0/1:**
+   **Case 3 - Sample is heterozygous for alternate allele (GT=0/1):**
 
    * The halotype column in the _.haplotag_list.tsv.gz_ file contains either H1 or H2 which represents the haplotype information of each read. 
 
