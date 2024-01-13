@@ -165,7 +165,7 @@ flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw ${barcode_id}_CO.h
 ```
 10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
-### (OPTIONAL) Using script and sample files provided
+#### (OPTIONAL) Using script and sample files provided
 To run with one example data (e.g. bc01):
 ```
 bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
