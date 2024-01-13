@@ -146,13 +146,24 @@ ${barcode_id}_CO.haplotagged.bam \
 ${fastq_file}
 
 ```
-10.
-11. Generate consensus of reads from each haplotype cluster
-    - `SPOA`
-12. Polish consensus with reads
-    - `flye`
-13. Trim head and tail cropping (OPTIONAL)
-    - `seqtk`
+8. Generate consensus of reads from each haplotype cluster - `SPOA`
+```bash
+# Assembly options:
+# -s,  --strand-ambiguous: for each sequence pick the strand with the better alignment
+# -l, --algorithm:  2 - semi-global
+
+# Example syntax: spoa --strand-ambiguous --algorithm 2 reads.fastq > out.fasta
+
+spoa --strand-ambiguous --algorithm 2 ${barcode_id}_CO.h1.fastq.gz > ${barcode_id}_CO.h1.con.fasta
+spoa --strand-ambiguous --algorithm 2 ${barcode_id}_CO.h2.fastq.gz > ${barcode_id}_CO.h2.con.fasta
+```
+
+9. Polish consensus with reads - `flye`
+```bash
+flye --polish-target ${barcode_id}_CO.h1.con.fasta --nano-raw ${barcode_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw ${barcode_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
+```
+10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
 ## Protocol
 To run with one example data (e.g. bc01):
