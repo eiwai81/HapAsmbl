@@ -41,6 +41,7 @@ samtools index ${barcode_id}_CO.sort.bam
 rm ${barcode_id}_CO.bam
 ```
 4. Variant calling - `clair3`
+
 A bed file containing gene region (`CO_region.bed`) flanked by primers was used here.
 ```bash
 # Set clair3 parameters
