@@ -100,52 +100,25 @@ ${barcode_id}_CO.sort.bam"
 
 
 ```
-8. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
-NOTES:
+7. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
 
-* Haplotype information of reads in the fastq files will not be produced in the ` .haplotag_list.tsv.gz `  file if:
+ 1. Case 1 - Sample is homozygous reference allele (GT=0/0):
 
-  * Sample is homozyous for ref allele: Genotype column in VCF is 0/0
+    * The *.haplotag.tsv.file* will be empty, so it is assumed this sample is **HOM_REF**. 
 
-  * Sample is homozygous for alt allele: Genotype column in VCF is 1/1
-  * No data: Genotype column in VCF is ./.
-
-
-1. Case 1 - Sample is homozygous reference allele (GT=0/0):
-
-   * The *.haplotag.tsv.file* was empty, So it is assumed this sample is **HOM_REF**. 
-
-   * In this case, the read_IDS are first extracted from the haplotagged bam file produced in the preceding step using the following code:
+    * In this case, the read_IDS are first extracted from the haplotagged bam file produced in the preceding step using the following code:
 
      ```bash
-     # Path to haplotype assembly directory
-     hapasm_dir=$(echo "$working_dir/haplotype_assembly")
-     
-     # For example, to extract ids from the FT3 haplotagged 
-     # bam files for barcode01
-     samtools view $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01_VRN1.haplotagged.bam | cut -f 1 > barcode01_VRN1_read_ids.txt
+     # For example, to extract ids from the CO haplotagged bamfile
+     samtools view ${barcode_id}_CO.haplotagged.bam | cut -f 1 > ${barcode_id}_CO_read_ids.txt
      
      ```
 
    * Afterwards, the IDs are used to exract reads from the sample fastq files and saved into 2 different files `.h1.fastq.gz` and `.h2.fastq.gz` to reflect the original diploid genotype of the sample.
 
      ```bash
-     # Path to reads filtered by filtlong
-     input_fq_dir=$(echo "$working_dir/combined_fastq")
-     
-     # Use ids to extract the reads from the filtered sample fastq file
-     # For example, to extract FT3 from barcode01 fastq files, see below
-     
-     ## NOTE: Save reads as h1.fastq.gz to represent FT3 reads from the first homologous chromosome
-     seqkit grep --pattern-file barcode01_VRN1_read_ids.txt \
-     $combined_fq/barcode01.trimmed.filt.fastq \
-     > $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01.VRN1.h1.fastq.gz
-     
-     ## NOTE: Save reads as h2.fastq.gz to represent FT3 reads from the second homologous chromosome
-     seqkit grep --pattern-file barcode01_VRN1_read_ids.txt \
-     $combined_fq/barcode01.trimmed.filt.fastq \
-     > $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01.VRN1.h2.fastq.gz
-     
+     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} ${barcode_id}_CO.h1.fastq.gz
+     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} ${barcode_id}_CO.h2.fastq.gz
      ```
 
 2. Case 2 - Sample is homozygous for alternate allele (GT=1/1):
