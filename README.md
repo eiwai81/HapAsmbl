@@ -42,7 +42,7 @@ rm ${barcode_id}_CO.bam
 ```
 4. Variant calling - `clair3`
 
-A bed file containing gene region (`CO_region.bed`) flanked by primers was used here.
+A bed file containing gene region (`CO_region.bed`) flanked by primers was specified using `--bed_fn` option.
 ```bash
 # Set clair3 parameters
 platform="ont"
