@@ -154,7 +154,7 @@ ${hapasm_dir}/per_gene/{1}/${barcode_id}/${barcode_id}_{1}.haplotag_list.tsv.gz 
 ${hapasm_dir}/per_gene/{1}/${barcode_id}/${barcode_id}_{1}.haplotagged.bam \
 ${fastq_file}"
 
-#-------- 4.1 Cluster reads from each haplotype ----------
+#-------- 4.1 Assemble and polish consensus with spoa and flye ----------
 
 parallel -j 24 "bash hapasm_module3.sh {1} {2} {3} {4} \
 ${hapasm_dir}/per_gene/{1}/{2}/assm \
