@@ -53,7 +53,7 @@ run_clair3.sh \
 --threads=${threads} \
 --platform=${platform} \
 --model_path=${model_path} \
---output=${barcode_id} \
+--output=${barcode_id}_vcf \
 --include_all_ctgs \
 --sample_name=${barcode_id} \
 --bed_fn=CO_region.bed \
@@ -65,16 +65,128 @@ run_clair3.sh \
 --no_phasing_for_fa \
 --use_whatshap_for_final_output_phasing"
 ```
-6. Read-based phasing of genetic variants into haplotypes
-    - `whatshap`
-7. Cluster unmapped reads into haplotypes
-    - `whatshap`
-    - `seqkit`
-8. Generate consensus of reads from each haplotype cluster
+5. Read-based phasing of genetic variants into haplotypes - `whatshap`
+```bash
+# Phase variants
+whatshap phase \
+-o ${barcode_id}_CO.phased.vcf.gz \
+--reference ${reference} \
+--tag HP \
+${barcode_id}_vcf/merge_output.vcf.gz \
+${barcode_id}_CO.sort.bam \
+--indels \
+--sample ${barcode_id} \
+--ignore-read-groups \
+--internal-downsampling 23 \
+--distrust-genotypes"
+
+# Index phased VCF
+tabix -f -p vcf ${barcode_id}_CO.phased.vcf.gz"
+```
+6. Tag reads from each haplotype in alignment file
+```bash
+# Haplotag reads
+whatshap haplotag \
+-o ${barcode_id}_CO.haplotagged.bam \
+--reference ${reference} \
+--output-haplotag-list ${barcode_id}_CO.haplotag_list.tsv.gz \
+--ignore-read-groups \
+--sample ${barcode_id} \
+--skip-missing-contigs \
+${barcode_id}_CO.phased.vcf.gz \
+${barcode_id}_CO.sort.bam"
+
+# Create a fastq file containing reads from each haplotype
+
+
+```
+8. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
+NOTES:
+
+* Haplotype information of reads in the fastq files will not be produced in the ` .haplotag_list.tsv.gz `  file if:
+
+  * Sample is homozyous for ref allele: Genotype column in VCF is 0/0
+
+  * Sample is homozygous for alt allele: Genotype column in VCF is 1/1
+  * No data: Genotype column in VCF is ./.
+
+
+1. Case 1 - Sample is homozygous reference allele (GT=0/0):
+
+   * The *.haplotag.tsv.file* was empty, So it is assumed this sample is **HOM_REF**. 
+
+   * In this case, the read_IDS are first extracted from the haplotagged bam file produced in the preceding step using the following code:
+
+     ```bash
+     # Path to haplotype assembly directory
+     hapasm_dir=$(echo "$working_dir/haplotype_assembly")
+     
+     # For example, to extract ids from the FT3 haplotagged 
+     # bam files for barcode01
+     samtools view $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01_VRN1.haplotagged.bam | cut -f 1 > barcode01_VRN1_read_ids.txt
+     
+     ```
+
+   * Afterwards, the IDs are used to exract reads from the sample fastq files and saved into 2 different files `.h1.fastq.gz` and `.h2.fastq.gz` to reflect the original diploid genotype of the sample.
+
+     ```bash
+     # Path to reads filtered by filtlong
+     input_fq_dir=$(echo "$working_dir/combined_fastq")
+     
+     # Use ids to extract the reads from the filtered sample fastq file
+     # For example, to extract FT3 from barcode01 fastq files, see below
+     
+     ## NOTE: Save reads as h1.fastq.gz to represent FT3 reads from the first homologous chromosome
+     seqkit grep --pattern-file barcode01_VRN1_read_ids.txt \
+     $combined_fq/barcode01.trimmed.filt.fastq \
+     > $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01.VRN1.h1.fastq.gz
+     
+     ## NOTE: Save reads as h2.fastq.gz to represent FT3 reads from the second homologous chromosome
+     seqkit grep --pattern-file barcode01_VRN1_read_ids.txt \
+     $combined_fq/barcode01.trimmed.filt.fastq \
+     > $hapasm_dir/per_gene_bam/VRN1/barcode01/barcode01.VRN1.h2.fastq.gz
+     
+     ```
+
+2. Case 2 - Sample is homozygous for alternate allele (GT=1/1):
+
+   * Although the file isn't empty in this case, the halotype column contains ` none` values which indicates that this sample is **HOM_ALT**. If this is the case, the same steps as in **Case 1** are repeated to retrieve reads from homologous chromosomes.
+
+3. Case 3 - GT=0/1:
+
+   * The halotype column contains either H1 or H2 which represents the haplotype information of each read. 
+
+   * In this case, the  `whatshap split` program to get the read haplotypes as shown below.
+
+     ```bash
+     # Example syntax: whatshap split --output-h1 h1.fastq.gz --output-h2 h2.fastq.gz reads.fastq.gz haplotypes.txt
+     whatshap split \
+     --output-h1 $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.h1.fastq.gz \
+     --output-h2 $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.h2.fastq.gz \
+     $combined_fq/barcode03.trimmed.filt.fastq \
+     $hapasm_dir/per_gene_bam/VRN1/barcode03/barcode03_VRN1.haplotag_list.tsv.gz
+     
+     ```
+
+A crude `in house` python script was used to automate this step. It can be provided on request. The script was run as shown below.
+
+```bash
+# For VRN1-VRN3, FT3, FTL9
+# split.py was placed in the $working_dir/scripts folder
+parallel -j 24 "python ./scripts/split_reads.py \
+--region {1} \
+--barcode_id {2} \
+--haplotagged_bam_dir $hapasm_dir/per_gene_bam \
+--fq_dir ./filtered \
+$hapasm_dir/per_gene_bam/{1}/{2}/{2}_{1}.haplotag_list.tsv.gz" ::: VRN1 :::: barcode_list.txt
+
+```
+10.
+11. Generate consensus of reads from each haplotype cluster
     - `SPOA`
-9. Polish consensus with reads
+12. Polish consensus with reads
     - `flye`
-10. Trim head and tail cropping (OPTIONAL)
+13. Trim head and tail cropping (OPTIONAL)
     - `seqtk`
 
 ## Protocol
