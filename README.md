@@ -3,8 +3,8 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 ## Installation of packages with bioconda
 All packages (and versions) used in this workflow are explicitly listed in the _hapasmbl_packages.txt_ file. To install them, please use:
 ```bash
-conda create --name hapasm --file hapasmbl_packages.txt
-conda activate hapasm
+conda create --name hapasmbl --file hapasmbl_packages.txt
+conda activate hapasmbl
 ```
 ## Summary of workflow
 1. Generate reads using gene-specific primers
