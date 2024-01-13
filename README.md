@@ -6,7 +6,7 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 ```
-## Summary of workflow
+## Pipeline
 1. Set input variables
 ```bash
 reference="ref.fasta"
@@ -165,7 +165,7 @@ flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw ${barcode_id}_CO.h
 ```
 10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
-## Protocol
+### (OPTIONAL) Using script and sample files provided
 To run with one example data (e.g. bc01):
 ```
 bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
