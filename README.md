@@ -38,16 +38,17 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
     - `seqtk`
 
 ## Protocol
-- To run with one example data (e.g. bc01):
+To run with one example data (e.g. bc01):
 ```
 bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
 ```
-- To run on multiple samples (e.g. 3 samples):
+- Final assemblies are located in `results_test/per_gene/CO/bc01/assm/bc01.CO.h1.fasta` and `results_test/per_gene/CO/bc01/assm/bc01.CO.h2.fasta`.
+
+To run on multiple samples (e.g. 3 samples):
 ```
 parallel -j 1 echo "{} >> sample_ids.txt" ::: bc{01..03}
 
 cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/{1}.fastq -o results_test -b {1} -t 8"
 ```
-## Output folder
-Final assemblies are located in `results_test/per_gene/CO/bc01/assm/bc01.CO.h1.fasta` and `results_test/per_gene/CO/bc01/assm/bc01.CO.h2.fasta`.
+
 
