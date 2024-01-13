@@ -6,7 +6,7 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 ```
-## Pipeline
+## Pipeline: step-by-step
 1. Set input variables
 ```bash
 reference="ref.fasta"
