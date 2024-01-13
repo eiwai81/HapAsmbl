@@ -78,7 +78,7 @@ ${barcode_id}_CO.sort.bam \
 --sample ${barcode_id} \
 --ignore-read-groups \
 --internal-downsampling 23 \
---distrust-genotypes"
+--distrust-genotypes
 
 # Index phased VCF
 tabix -f -p vcf ${barcode_id}_CO.phased.vcf.gz"
