@@ -7,8 +7,14 @@ conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 ```
 ## Summary of workflow
-1. Read mapping and removal of concatemers
- ```bash
+1. Set input variables
+```bash
+reference="ref.fasta"
+fastq_file="bc01.fastq"
+barcode_id="bc01"
+```
+2. Read mapping and removal of concatemers
+```bash
 # Map with Minimap2
 minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${barcode_id}_filt.bam
 
@@ -21,7 +27,7 @@ samtools view -h -F 2308 ${barcode_id}_filt.bam \
 # Index bamfile
 samtools index ${barcode_id}_clip.bam
 ```
-2. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_)
+3. Extract reads originating from a flowering gene e.g. CO (_CONSTANS_)
 ```bash
 samtools view -h ${barcode_id}_clip.bam CO -o ${barcode_id}_CO.bam
 
@@ -32,8 +38,33 @@ samtools index ${barcode_id}_CO.sort.bam
 # remove unsorted bamfile
 rm ${barcode_id}_CO.bam
 ```
-5. SNPs/indel variant calling
-    - `clair3` - Preferred because it also calls indels.
+4. Variant calling
+```bash
+platform="ont"
+model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
+
+# path to bed
+bed_path=$(echo "$(pwd)/ref")
+
+cat ${seq_ids} | parallel -j 1 "run_clair3.sh \
+--bam_fn=${barcode_id}_CO.sort.bam \
+--ref_fn=${reference} \
+--threads=${threads} \
+--platform=${platform} \
+--model_path=${model_path} \
+--output=${hapasm_dir}/per_gene/{1}/${barcode_id} \
+--include_all_ctgs \
+--sample_name=${barcode_id} \
+--bed_fn=${bed_path}/{1}.region.bed \
+--gvcf \
+--chunk_size=25000 \
+--var_pct_full=1 \
+--ref_pct_full=1 \
+--print_ref_calls \
+--snp_min_af=0.01 \
+--no_phasing_for_fa \
+--use_whatshap_for_final_output_phasing"
+```
 6. Read-based phasing of genetic variants into haplotypes
     - `whatshap`
 7. Cluster unmapped reads into haplotypes
