@@ -45,10 +45,10 @@ bash ./run_hapasmbl.sh -r ref/CO.fasta -f barcode106_filt.fastq.gz -o results_te
 ```
 - To run on multiple samples (e.g. 96 samples):
 ```
-parallel -j 1 echo "{} >> sample_ids.txt" ::: barcode{01..96}
+parallel -j 1 echo "{} >> sample_ids.txt" ::: bc{01..03}
 
-cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ref/CO.fasta -f {1}_filt.fastq.gz -o results_test -b {1} -t 8"
+cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/{1}.fastq -o results_test -b {1} -t 8"
 ```
 ## Output folder
-Final assemblies are located in `results_test/per_gene/CO/barcode106/assm/barcode106.CO.h1.fasta` and `results_test/per_gene/CO/barcode106/assm/barcode106.CO.h2.fasta`.
+Final assemblies are located in `results_test/per_gene/CO/bc01/assm/bc01.CO.h1.fasta` and `results_test/per_gene/CO/bc01/assm/bc01.CO.h2.fasta`.
 
