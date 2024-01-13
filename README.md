@@ -63,7 +63,7 @@ run_clair3.sh \
 --print_ref_calls \
 --snp_min_af=0.01 \
 --no_phasing_for_fa \
---use_whatshap_for_final_output_phasing"
+--use_whatshap_for_final_output_phasing
 ```
 5. Read-based phasing of genetic variants into haplotypes - `whatshap`
 ```bash
@@ -81,7 +81,7 @@ ${barcode_id}_CO.sort.bam \
 --distrust-genotypes
 
 # Index phased VCF
-tabix -f -p vcf ${barcode_id}_CO.phased.vcf.gz"
+tabix -f -p vcf ${barcode_id}_CO.phased.vcf.gz
 ```
 6. Tag reads from each haplotype in alignment file
 ```bash
@@ -94,17 +94,13 @@ whatshap haplotag \
 --sample ${barcode_id} \
 --skip-missing-contigs \
 ${barcode_id}_CO.phased.vcf.gz \
-${barcode_id}_CO.sort.bam"
-
-# Create a fastq file containing reads from each haplotype
-
-
+${barcode_id}_CO.sort.bam
 ```
 7. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
 
  1. Case 1 - Sample is homozygous reference allele (GT=0/0):
 
-    * The *.haplotag.tsv.file* will be empty, so it is assumed this sample is **HOM_REF**. 
+    * The *.haplotag_list.tsv.gz* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
     * In this case, the read_IDS are first extracted from the haplotagged bam file produced in the preceding step using the following code:
 
