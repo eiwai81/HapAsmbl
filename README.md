@@ -98,7 +98,7 @@ ${barcode_id}_CO.sort.bam
 ```
 7. Read Splitting - Use TSV file containing reads-haplotype information to split reads according to haplotype
 
- 1. Case 1 - Sample is homozygous reference allele (GT=0/0):
+    Case 1 - Sample is homozygous reference allele (GT=0/0):
 
     * The *.haplotag_list.tsv.gz* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
