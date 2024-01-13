@@ -38,11 +38,11 @@ Any of the long-read mappers above can be used. However, `minimap2` was used bec
     - `seqtk`
 
 ## Protocol
-- To run with example data:
+- To run with one example data (e.g. bc01):
 ```
 bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
 ```
-- To run on multiple samples (e.g. 96 samples):
+- To run on multiple samples (e.g. 3 samples):
 ```
 parallel -j 1 echo "{} >> sample_ids.txt" ::: bc{01..03}
 
