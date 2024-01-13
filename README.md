@@ -97,6 +97,7 @@ ${barcode_id}_CO.phased.vcf.gz \
 ${barcode_id}_CO.sort.bam
 ```
 7. Read Splitting
+
    Use TSV file containing reads-haplotype information to split reads according to haplotype
 
     **Case 1 - Sample is homozygous reference allele (GT=0/0):**
