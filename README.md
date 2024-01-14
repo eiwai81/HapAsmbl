@@ -144,7 +144,7 @@ A crude in-house `split_reads.py` python script was used to automate this step. 
 python split_reads.py \
 -b ${barcode_id} \
 -r CO \
--o path/to/output_dir \
+-o cluster_reads/ \
 ${barcode_id}_CO.haplotag_list.tsv.gz \
 ${barcode_id}_CO.haplotagged.bam \
 ${fastq_file}
@@ -158,14 +158,14 @@ ${fastq_file}
 
 # Example syntax: spoa --strand-ambiguous --algorithm 2 reads.fastq > out.fasta
 
-spoa --strand-ambiguous --algorithm 2 ${barcode_id}_CO.h1.fastq.gz > ${barcode_id}_CO.h1.con.fasta
-spoa --strand-ambiguous --algorithm 2 ${barcode_id}_CO.h2.fastq.gz > ${barcode_id}_CO.h2.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${barcode_id}_CO.h1.fastq.gz > ${barcode_id}_CO.h1.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${barcode_id}_CO.h2.fastq.gz > ${barcode_id}_CO.h2.con.fasta
 ```
 
 9. Polish consensus with reads - `flye`
 ```bash
-flye --polish-target ${barcode_id}_CO.h1.con.fasta --nano-raw ${barcode_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
-flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw ${barcode_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${barcode_id}_CO.h1.con.fasta --nano-raw cluster_reads/${barcode_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw cluster_reads/${barcode_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
 ```
 10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
