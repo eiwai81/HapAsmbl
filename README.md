@@ -171,7 +171,7 @@ flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw cluster_reads/${ba
 
 - For example, to trim off 10 bases from both 5' and 3' ends of contigs,
 ```bash
-seqtk trimfq -b 10 -e 10 ${barcode_id}_CO.h1.fasta ${barcode_id}_CO.h1.trim.fasta
+seqtk trimfq -b 10 -e 10 ${barcode_id}_CO.h1.fasta > ${barcode_id}_CO.h1.trim.fasta
 ```
 
 #### (OPTIONAL) Using script and sample files provided
