@@ -139,7 +139,9 @@ ${barcode_id}_CO.sort.bam
 A crude in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
 
 ```bash
-# Specify directory for clustering reads using the option -o
+# -r specifies region or name of flowering gene
+# -b specifies barcode identifier or sample name
+# -o specifies output directory to put reads from a haplotype
 
 python split_reads.py \
 -b ${barcode_id} \
