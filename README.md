@@ -117,8 +117,8 @@ ${barcode_id}_CO.sort.bam
    * Afterwards, the IDs are used to exract reads from the sample fastq files and saved into 2 different files `.h1.fastq.gz` and `.h2.fastq.gz` to reflect the original diploid genotype of the sample.
 
      ```bash
-     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} ${barcode_id}_CO.h1.fastq.gz
-     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} ${barcode_id}_CO.h2.fastq.gz
+     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} -o ${barcode_id}_CO.h1.fastq.gz
+     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} -o ${barcode_id}_CO.h2.fastq.gz
      ```
 
    **Case 2 - Sample is homozygous for alternate allele (GT=1/1):**
