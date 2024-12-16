@@ -10,35 +10,35 @@ conda activate hapasmbl
 1. Set input variables
 ```bash
 reference="ref.fasta"
-fastq_file="bc01.fastq"
-barcode_id="bc01"
+fastq_file="F10_VRN2a_FT3.fq.gz"
+sample_id="F10"
 threads=4
 ```
 2. Read mapping and removal of concatemers - `minimap2`, `samtools` and, `bbmap reformat.sh`
 ```bash
 # Map with Minimap2
-minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${barcode_id}_filt.bam
+minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}_filt.bam
 
 # Remove unmapped reads and concatemers
 ## clipfilter=10 discards reads with more than 10 soft-clipped bases
-samtools view -h -F 2308 ${barcode_id}_filt.bam \
+samtools view -h -F 2308 ${sample_id}_filt.bam \
 | reformat.sh clipfilter=10 in=stdin.bam out=stdout.bam \
-| samtools sort > ${barcode_id}_clip.bam
+| samtools sort > ${sample_id}_clip.bam
 
 # Index bamfile
-samtools index ${barcode_id}_clip.bam
+samtools index ${sample_id}_clip.bam
 ```
-3. Extract reads originating from a flowering gene e.g. _CO_ (_CONSTANS_) - `samtools`
+3. Extract reads originating from a flowering gene e.g. _VRN2a_ (_VERNALIZATION2a_) - `samtools`
 ```bash
 # Extract alignments at CO
-samtools view -h ${barcode_id}_clip.bam CO -o ${barcode_id}_CO.bam
+samtools view -h ${sample_id}_clip.bam CO -o ${sample_id}_CO.bam
 
 # Create a sorted and indexed bamfile
-samtools sort -o ${barcode_id}_CO.sort.bam ${barcode_id}_CO.bam
-samtools index ${barcode_id}_CO.sort.bam
+samtools sort -o ${sample_id}_CO.sort.bam ${sample_id}_CO.bam
+samtools index ${sample_id}_CO.sort.bam
 
 # remove unsorted bamfile
-rm ${barcode_id}_CO.bam
+rm ${sample_id}_CO.bam
 ```
 4. Variant calling - `clair3`
 
@@ -50,14 +50,14 @@ model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
 
 # run clair3
 run_clair3.sh \
---bam_fn=${barcode_id}_CO.sort.bam \
+--bam_fn=${sample_id}_CO.sort.bam \
 --ref_fn=${reference} \
 --threads=${threads} \
 --platform=${platform} \
 --model_path=${model_path} \
---output=${barcode_id}_vcf \
+--output=${sample_id}_vcf \
 --include_all_ctgs \
---sample_name=${barcode_id} \
+--sample_name=${sample_id} \
 --bed_fn=CO_region.bed \
 --chunk_size=25000 \
 --var_pct_full=1 \
@@ -71,32 +71,32 @@ run_clair3.sh \
 ```bash
 # Phase variants
 whatshap phase \
--o ${barcode_id}_CO.phased.vcf.gz \
+-o ${sample_id}_CO.phased.vcf.gz \
 --reference ${reference} \
 --tag HP \
-${barcode_id}_vcf/merge_output.vcf.gz \
-${barcode_id}_CO.sort.bam \
+${sample_id}_vcf/merge_output.vcf.gz \
+${sample_id}_CO.sort.bam \
 --indels \
---sample ${barcode_id} \
+--sample ${sample_id} \
 --ignore-read-groups \
 --internal-downsampling 23 \
 --distrust-genotypes
 
 # Index phased VCF
-tabix -f -p vcf ${barcode_id}_CO.phased.vcf.gz
+tabix -f -p vcf ${sample_id}_CO.phased.vcf.gz
 ```
 6. Tag reads from each haplotype in alignment file
 ```bash
 # Haplotag reads
 whatshap haplotag \
--o ${barcode_id}_CO.haplotagged.bam \
+-o ${sample_id}_CO.haplotagged.bam \
 --reference ${reference} \
---output-haplotag-list ${barcode_id}_CO.haplotag_list.tsv.gz \
+--output-haplotag-list ${sample_id}_CO.haplotag_list.tsv.gz \
 --ignore-read-groups \
---sample ${barcode_id} \
+--sample ${sample_id} \
 --skip-missing-contigs \
-${barcode_id}_CO.phased.vcf.gz \
-${barcode_id}_CO.sort.bam
+${sample_id}_CO.phased.vcf.gz \
+${sample_id}_CO.sort.bam
 ```
 7. Read Splitting
 
@@ -110,15 +110,15 @@ ${barcode_id}_CO.sort.bam
 
      ```bash
      # For example, to extract ids from the CO haplotagged bamfile
-     samtools view ${barcode_id}_CO.haplotagged.bam | cut -f 1 > ${barcode_id}_CO_read_ids.txt
+     samtools view ${sample_id}_CO.haplotagged.bam | cut -f 1 > ${sample_id}_CO_read_ids.txt
      
      ```
 
    * Afterwards, the IDs are used to exract reads from the sample fastq files and saved into 2 different files `.h1.fastq.gz` and `.h2.fastq.gz` to reflect the original diploid genotype of the sample.
 
      ```bash
-     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} -o ${barcode_id}_CO.h1.fastq.gz
-     seqkit grep --pattern-file ${barcode_id}_CO_read_ids.txt ${fastq_file} -o ${barcode_id}_CO.h2.fastq.gz
+     seqkit grep --pattern-file ${sample_id}_CO_read_ids.txt ${fastq_file} -o ${sample_id}_CO.h1.fastq.gz
+     seqkit grep --pattern-file ${sample_id}_CO_read_ids.txt ${fastq_file} -o ${sample_id}_CO.h2.fastq.gz
      ```
 
    **Case 2 - Sample is homozygous for alternate allele (GT=1/1):**
@@ -133,7 +133,7 @@ ${barcode_id}_CO.sort.bam
 
      ```bash
      # Example syntax: whatshap split --output-h1 h1.fastq.gz --output-h2 h2.fastq.gz reads.fastq.gz haplotypes.txt
-     whatshap split --output-h1 ${barcode_id}_CO.h1.fastq.gz --output-h2 ${barcode_id}_CO.h2.fastq.gz ${fastq_file} ${barcode_id}_CO.haplotag_list.tsv.gz 
+     whatshap split --output-h1 ${sample_id}_CO.h1.fastq.gz --output-h2 ${sample_id}_CO.h2.fastq.gz ${fastq_file} ${sample_id}_CO.haplotag_list.tsv.gz 
      ```
 
 A crude in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
@@ -144,11 +144,11 @@ A crude in-house `split_reads.py` python script was used to automate this step. 
 # -o specifies output directory to put reads from a haplotype
 
 python split_reads.py \
--b ${barcode_id} \
+-b ${sample_id} \
 -r CO \
 -o cluster_reads/ \
-${barcode_id}_CO.haplotag_list.tsv.gz \
-${barcode_id}_CO.haplotagged.bam \
+${sample_id}_CO.haplotag_list.tsv.gz \
+${sample_id}_CO.haplotagged.bam \
 ${fastq_file}
 
 ```
@@ -160,20 +160,20 @@ ${fastq_file}
 
 # Example syntax: spoa --strand-ambiguous --algorithm 2 reads.fastq > out.fasta
 
-spoa --strand-ambiguous --algorithm 2 cluster_reads/${barcode_id}_CO.h1.fastq.gz > ${barcode_id}_CO.h1.con.fasta
-spoa --strand-ambiguous --algorithm 2 cluster_reads/${barcode_id}_CO.h2.fastq.gz > ${barcode_id}_CO.h2.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_CO.h1.fastq.gz > ${sample_id}_CO.h1.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_CO.h2.fastq.gz > ${sample_id}_CO.h2.con.fasta
 ```
 
 9. Polish consensus with reads - `flye`
 ```bash
-flye --polish-target ${barcode_id}_CO.h1.con.fasta --nano-raw cluster_reads/${barcode_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
-flye --polish-target ${barcode_id}_CO.h2.con.fasta --nano-raw cluster_reads/${barcode_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${sample_id}_CO.h1.con.fasta --nano-raw cluster_reads/${sample_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${sample_id}_CO.h2.con.fasta --nano-raw cluster_reads/${sample_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
 ```
 10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
 - For example, to trim off 10 bases from both 5' and 3' ends of contigs,
 ```bash
-seqtk trimfq -b 10 -e 10 ${barcode_id}_CO.h1.fasta > ${barcode_id}_CO.h1.trim.fasta
+seqtk trimfq -b 10 -e 10 ${sample_id}_CO.h1.fasta > ${sample_id}_CO.h1.trim.fasta
 ```
 
 #### (OPTIONAL) Using script and sample files provided
