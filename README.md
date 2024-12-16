@@ -30,15 +30,16 @@ samtools index ${sample_id}_clip.bam
 ```
 3. Extract reads originating from a flowering gene e.g. _VRN2a_ (_VERNALIZATION2a_) - `samtools`
 ```bash
-# Extract alignments at CO
-samtools view -h ${sample_id}_clip.bam CO -o ${sample_id}_CO.bam
+# Extract alignments at VRN2a
+target="VRN2a"
+samtools view -h ${sample_id}_clip.bam ${target} -o ${sample_id}_${target}.bam
 
 # Create a sorted and indexed bamfile
-samtools sort -o ${sample_id}_CO.sort.bam ${sample_id}_CO.bam
+samtools sort -o ${sample_id}_${target}.sort.bam ${sample_id}_${target}.bam
 samtools index ${sample_id}_CO.sort.bam
 
 # remove unsorted bamfile
-rm ${sample_id}_CO.bam
+rm ${sample_id}_${target}.bam
 ```
 4. Variant calling - `clair3`
 
@@ -50,7 +51,7 @@ model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
 
 # run clair3
 run_clair3.sh \
---bam_fn=${sample_id}_CO.sort.bam \
+--bam_fn=${sample_id}_${target}.sort.bam \
 --ref_fn=${reference} \
 --threads=${threads} \
 --platform=${platform} \
@@ -75,7 +76,7 @@ whatshap phase \
 --reference ${reference} \
 --tag HP \
 ${sample_id}_vcf/merge_output.vcf.gz \
-${sample_id}_CO.sort.bam \
+${sample_id}_${target}.sort.bam \
 --indels \
 --sample ${sample_id} \
 --ignore-read-groups \
