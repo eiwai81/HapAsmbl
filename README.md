@@ -34,36 +34,36 @@ samtools index ${sample_id}_clip.bam
 target="VRN2a"
 samtools view -h ${sample_id}_clip.bam ${target} -o ${sample_id}_${target}.bam
 
-# Create a sorted and indexed bamfile
+# Sort and index bamfile of extracted region
 samtools sort -o ${sample_id}_${target}.sort.bam ${sample_id}_${target}.bam
-samtools index ${sample_id}_CO.sort.bam
+samtools index ${sample_id}_${target}.sort.bam
 
-# remove unsorted bamfile
+# remove unsorted target bamfile
 rm ${sample_id}_${target}.bam
 ```
 4. Variant calling - `clair3`
 
-A bed file containing gene region (`CO_region.bed`) flanked by primers was specified using `--bed_fn` option.
+A bed file containing gene region (`VRN2a_region.bed`) flanked by primers can be specified using `--bed_fn` option (OPTIONAL).
 ```bash
 # Set clair3 parameters
 platform="ont"
 model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
 
 # run clair3
+## options --var_pct_full=1 and --ref_pct_full=1 are recommended for amplicon sequence data
 run_clair3.sh \
 --bam_fn=${sample_id}_${target}.sort.bam \
 --ref_fn=${reference} \
 --threads=${threads} \
 --platform=${platform} \
 --model_path=${model_path} \
---output=${sample_id}_vcf \
+--output=${sample_id}_${target}_vcf \
 --include_all_ctgs \
 --sample_name=${sample_id} \
---bed_fn=CO_region.bed \
+--bed_fn=${target}_region.bed \
 --chunk_size=25000 \
 --var_pct_full=1 \
 --ref_pct_full=1 \
---print_ref_calls \
 --snp_min_af=0.01 \
 --no_phasing_for_fa \
 --use_whatshap_for_final_output_phasing
@@ -72,10 +72,10 @@ run_clair3.sh \
 ```bash
 # Phase variants
 whatshap phase \
--o ${sample_id}_CO.phased.vcf.gz \
+-o ${sample_id}_${target}.phased.vcf.gz \
 --reference ${reference} \
 --tag HP \
-${sample_id}_vcf/merge_output.vcf.gz \
+${sample_id}_${target}_vcf/merge_output.vcf.gz \
 ${sample_id}_${target}.sort.bam \
 --indels \
 --sample ${sample_id} \
@@ -84,26 +84,26 @@ ${sample_id}_${target}.sort.bam \
 --distrust-genotypes
 
 # Index phased VCF
-tabix -f -p vcf ${sample_id}_CO.phased.vcf.gz
+tabix -f -p vcf ${sample_id}_${target}.phased.vcf.gz
 ```
 6. Tag reads from each haplotype in alignment file
 ```bash
 # Haplotag reads
 whatshap haplotag \
--o ${sample_id}_CO.haplotagged.bam \
+-o ${sample_id}_${target}.haplotagged.bam \
 --reference ${reference} \
---output-haplotag-list ${sample_id}_CO.haplotag_list.tsv.gz \
+--output-haplotag-list ${sample_id}_${target}.haplotag_list.tsv.gz \
 --ignore-read-groups \
 --sample ${sample_id} \
 --skip-missing-contigs \
-${sample_id}_CO.phased.vcf.gz \
-${sample_id}_CO.sort.bam
+${sample_id}_${target}.phased.vcf.gz \
+${sample_id}_${target}.sort.bam
 ```
 7. Read Splitting
 
    Use TSV file containing reads-haplotype information to split reads according to haplotype
 
-    **Case 1 - Sample is homozygous reference allele (GT=0/0):**
+    **Case 1 - Sample is homozygous for reference allele (GT=0/0):**
 
     * The *.haplotag_list.tsv.gz* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
@@ -111,15 +111,15 @@ ${sample_id}_CO.sort.bam
 
      ```bash
      # For example, to extract ids from the CO haplotagged bamfile
-     samtools view ${sample_id}_CO.haplotagged.bam | cut -f 1 > ${sample_id}_CO_read_ids.txt
+     samtools view ${sample_id}_${target}.haplotagged.bam | cut -f 1 > ${sample_id}_${target}_read_ids.txt
      
      ```
 
    * Afterwards, the IDs are used to exract reads from the sample fastq files and saved into 2 different files `.h1.fastq.gz` and `.h2.fastq.gz` to reflect the original diploid genotype of the sample.
 
      ```bash
-     seqkit grep --pattern-file ${sample_id}_CO_read_ids.txt ${fastq_file} -o ${sample_id}_CO.h1.fastq.gz
-     seqkit grep --pattern-file ${sample_id}_CO_read_ids.txt ${fastq_file} -o ${sample_id}_CO.h2.fastq.gz
+     seqkit grep --pattern-file ${sample_id}_${target}_read_ids.txt ${fastq_file} -o ${sample_id}_${target}.h1.fastq.gz
+     seqkit grep --pattern-file ${sample_id}_${target}_read_ids.txt ${fastq_file} -o ${sample_id}_${target}.h2.fastq.gz
      ```
 
    **Case 2 - Sample is homozygous for alternate allele (GT=1/1):**
@@ -134,7 +134,7 @@ ${sample_id}_CO.sort.bam
 
      ```bash
      # Example syntax: whatshap split --output-h1 h1.fastq.gz --output-h2 h2.fastq.gz reads.fastq.gz haplotypes.txt
-     whatshap split --output-h1 ${sample_id}_CO.h1.fastq.gz --output-h2 ${sample_id}_CO.h2.fastq.gz ${fastq_file} ${sample_id}_CO.haplotag_list.tsv.gz 
+     whatshap split --output-h1 ${sample_id}_${target}.h1.fastq.gz --output-h2 ${sample_id}_${target}.h2.fastq.gz ${fastq_file} ${sample_id}_${target}.haplotag_list.tsv.gz 
      ```
 
 A crude in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
@@ -146,10 +146,10 @@ A crude in-house `split_reads.py` python script was used to automate this step. 
 
 python split_reads.py \
 -b ${sample_id} \
--r CO \
+-r ${target} \
 -o cluster_reads/ \
-${sample_id}_CO.haplotag_list.tsv.gz \
-${sample_id}_CO.haplotagged.bam \
+${sample_id}_${target}.haplotag_list.tsv.gz \
+${sample_id}_${target}.haplotagged.bam \
 ${fastq_file}
 
 ```
@@ -161,30 +161,31 @@ ${fastq_file}
 
 # Example syntax: spoa --strand-ambiguous --algorithm 2 reads.fastq > out.fasta
 
-spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_CO.h1.fastq.gz > ${sample_id}_CO.h1.con.fasta
-spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_CO.h2.fastq.gz > ${sample_id}_CO.h2.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_${target}.h1.fastq.gz > ${sample_id}_${target}.h1.con.fasta
+spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_${target}.h2.fastq.gz > ${sample_id}_${target}.h2.con.fasta
 ```
 
 9. Polish consensus with reads - `flye`
 ```bash
-flye --polish-target ${sample_id}_CO.h1.con.fasta --nano-raw cluster_reads/${sample_id}_CO.h1.fastq.gz --iterations 5 --out-dir ./
-flye --polish-target ${sample_id}_CO.h2.con.fasta --nano-raw cluster_reads/${sample_id}_CO.h2.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${sample_id}_${target}.h1.con.fasta --nano-raw cluster_reads/${sample_id}_${target}.h1.fastq.gz --iterations 5 --out-dir ./
+flye --polish-target ${sample_id}_${target}.h2.con.fasta --nano-raw cluster_reads/${sample_id}_${target}.h2.fastq.gz --iterations 5 --out-dir ./
 ```
 10. Head and tail cropping to trim off "foreign" nucleotides (OPTIONAL) - `seqtk`
 
 - For example, to trim off 10 bases from both 5' and 3' ends of contigs,
 ```bash
-seqtk trimfq -b 10 -e 10 ${sample_id}_CO.h1.fasta > ${sample_id}_CO.h1.trim.fasta
+seqtk trimfq -b 10 -e 10 ${sample_id}_${target}.h1.fasta > ${sample_id}_${target}.h1.trim.fasta
+seqtk trimfq -b 10 -e 10 ${sample_id}_${target}.h2.fasta > ${sample_id}_${target}.h2.trim.fasta
 ```
 
 #### (OPTIONAL) Using script and sample files provided
-To run with one example data (e.g. bc01):
+To run with one example data (e.g. F10):
 ```
-bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/bc01.fastq -o results_test -b bc01 -t 8
+bash ./run_hapasmbl.sh -r ref/reference.fasta -f ./fastqs/F10_VRN2a_FT3.fq.gz -o results_test -b F10 -t 8
 ```
-- Final assemblies are located in `results_test/per_gene/CO/bc01/assm/bc01.CO.h1.fasta` and `results_test/per_gene/CO/bc01/assm/bc01.CO.h2.fasta`.
+- Final assemblies of VRN2a are located in `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h1.fasta` and `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h2.fasta`.
 
-To run on multiple samples (e.g. 3 samples):
+To run on multiple samples (e.g. 2 samples):
 ```
 parallel -j 1 echo "{} >> sample_ids.txt" ::: bc{01..03}
 
