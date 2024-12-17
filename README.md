@@ -43,7 +43,7 @@ rm ${sample_id}_${target}.bam
 ```
 4. Variant calling - `clair3`
 
-A bed file containing gene region (`VRN2a_region.bed`) flanked by primers can be specified using `--bed_fn` option (OPTIONAL).
+A bed file containing that target gene region (`VRN2a_region.bed`) can be specified using `--bed_fn` option (OPTIONAL).
 ```bash
 # Set clair3 parameters
 platform="ont"
@@ -60,7 +60,7 @@ run_clair3.sh \
 --output=${sample_id}_${target}_vcf \
 --include_all_ctgs \
 --sample_name=${sample_id} \
---bed_fn=${target}_region.bed \
+--bed_fn=${target}.region.bed \
 --chunk_size=25000 \
 --var_pct_full=1 \
 --ref_pct_full=1 \
@@ -187,9 +187,9 @@ bash ./run_hapasmbl.sh -r ref/reference.fasta -f ./fastqs/F10_VRN2a_FT3.fq.gz -o
 
 To run on multiple samples (e.g. 2 samples):
 ```
-parallel -j 1 echo "{} >> sample_ids.txt" ::: bc{01..03}
+parallel -j 1 echo "{} >> sample_ids.txt" ::: F10 F12
 
-cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ref/CO.fasta -f ./fastqs/{1}.fastq -o results_test -b {1} -t 8"
+cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ./ref/${reference} -f ./fastqs/{1}_VRN2a_FT3.fq.gz -o results_test -b {1} -t 8"
 ```
 
 
