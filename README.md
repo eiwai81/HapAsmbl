@@ -181,7 +181,7 @@ seqtk trimfq -b 10 -e 10 ${sample_id}_${target}.h2.fasta > ${sample_id}_${target
 #### (OPTIONAL) Using script and sample files provided
 To run with one example data (e.g. F10):
 ```
-bash ./run_hapasmbl.sh -r ref/reference.fasta -f ./fastqs/F10_VRN2a_FT3.fq.gz -o results_test -b F10 -t 8
+bash ./run_hapasmbl.sh -r ./reference/ref.fasta -f ./fastqs/F10_VRN2a_FT3.fq.gz -o results_test -b F10 -t 8
 ```
 - Final assemblies of VRN2a are located in `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h1.fasta` and `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h2.fasta`.
 
