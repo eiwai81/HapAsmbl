@@ -17,22 +17,22 @@ threads=4
 2. Read mapping and removal of concatemers - `minimap2`, `samtools` and, `bbmap reformat.sh`
 ```bash
 # Map with Minimap2
-minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}_filt.bam
+minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}.bam
 
 # Remove unmapped reads and concatemers
 ## clipfilter=10 discards reads with more than 10 soft-clipped bases
-samtools view -h -F 2308 ${sample_id}_filt.bam \
+samtools view -h -F 2308 ${sample_id}.bam \
 | reformat.sh clipfilter=10 in=stdin.bam out=stdout.bam \
-| samtools sort > ${sample_id}_clip.bam
+| samtools sort > ${sample_id}_filt.bam
 
 # Index bamfile
-samtools index ${sample_id}_clip.bam
+samtools index ${sample_id}_filt.bam
 ```
 3. Extract reads originating from a flowering gene e.g. _VRN2a_ (_VERNALIZATION2a_) - `samtools`
 ```bash
 # Extract alignments at VRN2a
 target="VRN2a"
-samtools view -h ${sample_id}_clip.bam ${target} -o ${sample_id}_${target}.bam
+samtools view -h ${sample_id}_filt.bam ${target} -o ${sample_id}_${target}.bam
 
 # Sort and index bamfile of extracted region
 samtools sort -o ${sample_id}_${target}.sort.bam ${sample_id}_${target}.bam
