@@ -43,7 +43,7 @@ rm ${sample_id}_${target}.bam
 ```
 4. Variant calling - `clair3`
 
-A bed file containing that target gene region (`VRN2a_region.bed`) can be specified using `--bed_fn` option (OPTIONAL).
+A bed file containing the target gene region (`VRN2a_region.bed`) can be specified using `--bed_fn` option (OPTIONAL).
 ```bash
 # Set clair3 parameters
 platform="ont"
