@@ -6,8 +6,9 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 
-# Install duplex_tools to split reads
+# Install duplex_tools and porechop to split reads
 pip install duplex_tools
+mamba install porechop=0.2.4 
 ```
 ## Pipeline: step-by-step
 1. Set input variables
