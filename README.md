@@ -6,7 +6,7 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
 
-# Install other packages (duplex_tools, pandas, numpy)
+# Install duplex_tools to split reads
 pip install duplex_tools
 ```
 ## Pipeline: step-by-step
