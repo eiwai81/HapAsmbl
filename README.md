@@ -5,6 +5,9 @@ All packages (and versions) used in this workflow are explicitly listed in the _
 ```bash
 conda create --name hapasmbl --file hapasmbl_packages.txt
 conda activate hapasmbl
+
+# Install other packages (duplex_tools, pandas, numpy)
+pip install duplex_tools
 ```
 ## Pipeline: step-by-step
 1. Set input variables
