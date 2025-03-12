@@ -25,34 +25,26 @@ threads=4
 2. Read mapping and removal of concatemers - `minimap2`, `samtools` and, `bbmap reformat.sh`
 ```bash
 # Map with Minimap2
-minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}.bam
+minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}_tmp.bam
 
 # Remove unmapped reads and concatemers
 ## clipfilter=10 discards reads with more than 10 soft-clipped bases
-samtools view -h -F 2308 ${sample_id}.bam \
+samtools view -h -F 2308 ${sample_id}_tmp.bam \
 | reformat.sh clipfilter=10 in=stdin.bam out=stdout.bam \
-| samtools sort > ${sample_id}_filt.bam
+| samtools sort > ${sample_id}_clip.bam
 
 # Index bamfile
-samtools index ${sample_id}_filt.bam
+samtools index ${sample_id}_clip.bam
+
+# Remove tmp bamfile
+rm ${sample_id}_tmp.bam
 ```
-3. Extract reads originating from a flowering gene e.g. _VRN2a_ (_VERNALIZATION2a_) - `samtools`
+
+3. Variant calling - `clair3`
 ```bash
-# Extract alignments at VRN2a
-target="VRN2a"
-samtools view -h ${sample_id}_filt.bam ${target} -o ${sample_id}_${target}.bam
+# Create working directory for vcf files
+mkdir -p vcf
 
-# Sort and index bamfile of extracted region
-samtools sort -o ${sample_id}_${target}.sort.bam ${sample_id}_${target}.bam
-samtools index ${sample_id}_${target}.sort.bam
-
-# remove unsorted target bamfile
-rm ${sample_id}_${target}.bam
-```
-4. Variant calling - `clair3`
-
-A bed file containing the target gene region (`VRN2a_region.bed`) can be specified using `--bed_fn` option (OPTIONAL).
-```bash
 # Set clair3 parameters
 platform="ont"
 model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
@@ -60,52 +52,73 @@ model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
 # run clair3
 ## options --var_pct_full=1 and --ref_pct_full=1 are recommended for amplicon sequence data
 run_clair3.sh \
---bam_fn=${sample_id}_${target}.sort.bam \
+--bam_fn=${sample_id}_clip.bam \
 --ref_fn=${reference} \
 --threads=${threads} \
 --platform=${platform} \
 --model_path=${model_path} \
---output=${sample_id}_${target}_vcf \
+--output=./vcf/${sample_id} \
 --include_all_ctgs \
 --sample_name=${sample_id} \
---bed_fn=${target}.region.bed \
 --chunk_size=25000 \
 --var_pct_full=1 \
 --ref_pct_full=1 \
---snp_min_af=0.01 \
 --no_phasing_for_fa \
---use_whatshap_for_final_output_phasing
+--use_whatshap_for_final_output_phasing \
+--remove_intermediate_dir
+
 ```
-5. Read-based phasing of genetic variants into haplotypes - `whatshap`
+4. Read-based phasing of genetic variants into haplotypes - `whatshap`
 ```bash
 # Phase variants
 whatshap phase \
--o ${sample_id}_${target}.phased.vcf.gz \
+-o ./vcf/${sample_id}/${sample_id}_phased.vcf.gz \
 --reference ${reference} \
 --tag HP \
-${sample_id}_${target}_vcf/merge_output.vcf.gz \
-${sample_id}_${target}.sort.bam \
+./vcf/${sample_id}/merge_output.vcf.gz \
+${sample_id}_clip.bam \
 --indels \
 --sample ${sample_id} \
 --ignore-read-groups \
 --internal-downsampling 23 \
 --distrust-genotypes
 
+
 # Index phased VCF
-tabix -f -p vcf ${sample_id}_${target}.phased.vcf.gz
+tabix -f -p vcf ./vcf/${sample_id}/${sample_id}_phased.vcf.gz
 ```
-6. Tag reads from each haplotype in alignment file
+
+5. Tag reads from each haplotype in alignment file
+* A bamfile (`haplotagged.bam`) will be created in which reads belonging to a haplotype are tagged.
+* Reads corresponding to an haplotype will be written to `.tsv` file. 
 ```bash
 # Haplotag reads
 whatshap haplotag \
--o ${sample_id}_${target}.haplotagged.bam \
+-o ./vcf/${sample_id}/${sample_id}_haplotagged.bam \
 --reference ${reference} \
---output-haplotag-list ${sample_id}_${target}.haplotag_list.tsv.gz \
+--output-haplotag-list ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
 --ignore-read-groups \
 --sample ${sample_id} \
 --skip-missing-contigs \
-${sample_id}_${target}.phased.vcf.gz \
-${sample_id}_${target}.sort.bam
+$./vcf/${sample_id}/${sample_id}_phased.vcf.gz \
+${sample_id}_clip.bam
+
+# Index haplotagged bamfile
+samtools index ./vcf/${sample_id}/${sample_id}_haplotagged.bam
+
+```
+
+# 6. For a gene of interest (e.g. _VRN2a_), cluster reads from each haplotype
+```
+# make directory for each gene with sub-directory for each sample
+mkdir -p ./VRN2a/${sample_id}/tmp
+
+# Create an awk expression to extract reads from VRN2a from the .tsv file from previous step
+my_awk=$(echo 'BEGIN {OFS = "\t"} /^#/ {print} !/^#/ && $4 ~ var {print}')
+
+echo "VRN2a" | parallel "cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
+| awk -v var={1} '$my_awk' > ./{1}/${sample_id}/tmp/${sample_id}_{1}.haplotags.tsv" 
+
 ```
 7. Read Splitting
 
