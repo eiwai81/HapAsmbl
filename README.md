@@ -83,7 +83,6 @@ ${sample_id}_clip.bam \
 --internal-downsampling 23 \
 --distrust-genotypes
 
-
 # Index phased VCF
 tabix -f -p vcf ./vcf/${sample_id}/${sample_id}_phased.vcf.gz
 ```
