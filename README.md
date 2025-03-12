@@ -109,13 +109,16 @@ samtools index ./vcf/${sample_id}/${sample_id}_haplotagged.bam
 
 6. For a gene of interest (e.g. _VRN2a_), cluster reads from each haplotype
 ```
+target="VRN2a"
+
 # make directory for each gene with sub-directory for each sample
-mkdir -p ./VRN2a/${sample_id}/tmp
+mkdir -p ./${target}/${sample_id}/tmp
 
 # Create an awk expression to extract reads from VRN2a from the .tsv file from previous step
 my_awk=$(echo 'BEGIN {OFS = "\t"} /^#/ {print} !/^#/ && $4 ~ var {print}')
 
-cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv | awk -v var=VRN2a '$my_awk' > ./VRN2a/${sample_id}/tmp/${sample_id}_VRN2a.haplotags.tsv" 
+cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
+| awk -v var=VRN2a '$my_awk' > ./VRN2a/${sample_id}/tmp/${sample_id}_VRN2a.haplotags.tsv" 
 
 ```
 7. Read Splitting
@@ -124,13 +127,21 @@ cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv | awk -v var=VRN2a '$my_awk' >
 
     **Case 1 - Sample is homozygous for reference allele (GT=0/0):**
 
-    * The *.haplotag_list.tsv.gz* file will be empty, so it is assumed this sample is **HOM_REF**. 
+    * The *${sample_id}_VRN2a.haplotags.tsv* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
-    * In this case, the read_IDS are first extracted from the haplotagged bam file produced in the preceding step using the following code:
+    * In this case, first get alignments of only VRN2a the haplotagged bam. Then get the read ids from this bam file as shown below:
 
      ```bash
-     # For example, to extract ids from the CO haplotagged bamfile
-     samtools view ${sample_id}_${target}.haplotagged.bam | cut -f 1 > ${sample_id}_${target}_read_ids.txt
+     # Specify target region
+     target="VRN2a"
+     
+     # Extract reads from only VRN2a in haplotagged bamfile (Very important)
+     samtools view -h -o ./${target}/${sample_id}/tmp/${sample_id}_${target}.bam \
+     ./vcf/${sample_id}/${sample_id}_haplotagged.bam ${target}
+
+     # Retrieve ids of reads in column 1
+     samtools view -h ./${target}/${sample_id}/tmp/${sample_id}_${target}.bam \
+     | cut -f 1 > ${sample_id}_${target}_read_ids.txt
      
      ```
 
@@ -143,32 +154,41 @@ cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv | awk -v var=VRN2a '$my_awk' >
 
    **Case 2 - Sample is homozygous for alternate allele (GT=1/1):**
 
-   * Although the file isn't empty in this case, the halotype column contains ` none` values which indicates that this sample is **HOM_ALT**. If this is the case, the same steps as in **Case 1** are repeated to retrieve reads from homologous chromosomes.
+   * Although the file isn't empty in this case, the halotype column contains ` none` values, indicating that this sample is **HOM_ALT**.
+   * If this is the case, the same steps as in **Case 1** are repeated to retrieve reads from homologous chromosomes.
 
    **Case 3 - Sample is heterozygous for alternate allele (GT=0/1):**
 
-   * The halotype column in the _.haplotag_list.tsv.gz_ file contains either H1 or H2 which represents the haplotype information of each read. 
+   * The halotype column in the _${sample_id}_VRN2a.haplotags.tsv_ file contains either H1 or H2, which represent the haplotype information of each read. 
 
-   * In this case, the  `whatshap split` program to get the read haplotypes as shown below.
+   * In this case, the  `whatshap split` program is used to get the read haplotypes from the sample fastq file as shown below.
 
      ```bash
      # Example syntax: whatshap split --output-h1 h1.fastq.gz --output-h2 h2.fastq.gz reads.fastq.gz haplotypes.txt
-     whatshap split --output-h1 ${sample_id}_${target}.h1.fastq.gz --output-h2 ${sample_id}_${target}.h2.fastq.gz ${fastq_file} ${sample_id}_${target}.haplotag_list.tsv.gz 
+     whatshap split \
+     --output-h1 ${sample_id}_${target}.h1.fastq.gz \
+     --output-h2 ${sample_id}_${target}.h2.fastq.gz \
+     ${fastq_file} \
+     ./${target}/${sample_id}/tmp/${sample_id}_VRN2a.haplotags.tsv
      ```
 
-A crude in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
+An in-house `split_reads.py` python script was used to automate this step. The script was run as shown below.
 
 ```bash
+mkdir -p cluster_reads
+
+target="VRN2a"
+
 # -r specifies region or name of flowering gene
 # -b specifies barcode identifier or sample name
 # -o specifies output directory to put reads from a haplotype
 
-python split_reads.py \
+python ./scripts/split_reads.py \
 -b ${sample_id} \
 -r ${target} \
--o cluster_reads/ \
-${sample_id}_${target}.haplotag_list.tsv.gz \
-${sample_id}_${target}.haplotagged.bam \
+-o ./cluster_reads \
+./${target}/${sample_id}/tmp/${sample_id}_${target}.haplotags.tsv \
+./${target}/${sample_id}/tmp/${sample_id}_${target}.bam \
 ${fastq_file}
 
 ```
