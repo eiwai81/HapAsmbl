@@ -115,8 +115,7 @@ mkdir -p ./VRN2a/${sample_id}/tmp
 # Create an awk expression to extract reads from VRN2a from the .tsv file from previous step
 my_awk=$(echo 'BEGIN {OFS = "\t"} /^#/ {print} !/^#/ && $4 ~ var {print}')
 
-echo "VRN2a" | parallel "cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
-| awk -v var={1} '$my_awk' > ./{1}/${sample_id}/tmp/${sample_id}_{1}.haplotags.tsv" 
+cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv | awk -v var=VRN2a '$my_awk' > ./VRN2a/${sample_id}/tmp/${sample_id}_VRN2a.haplotags.tsv" 
 
 ```
 7. Read Splitting
