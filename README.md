@@ -3,12 +3,16 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 ## Installation of packages with bioconda
 All packages (and versions) used in this workflow are explicitly listed in the _hapasmbl_packages.txt_ file. To install them or replicate the environment that was used for this project, please use:
 ```bash
-conda create --name hapasmbl --file hapasmbl_packages.txt
-conda activate hapasmbl
+# Create environment
+micromamba create -n hapasm
 
-# Install duplex_tools and porechop to split reads
+# Activate environment
+micromamba activate hapasm
+
+# Install packages
+micromamba install minimap2 clair3 spoa pysam pandas parallel seqkit filtlong=0.2.1 bbmap=39.18 porechop=0.2.4 -y
 pip install duplex_tools
-mamba install porechop=0.2.4 
+
 ```
 ## Pipeline: step-by-step
 1. Set input variables
