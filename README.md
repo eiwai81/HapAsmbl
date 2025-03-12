@@ -99,7 +99,7 @@ whatshap haplotag \
 --ignore-read-groups \
 --sample ${sample_id} \
 --skip-missing-contigs \
-$./vcf/${sample_id}/${sample_id}_phased.vcf.gz \
+./vcf/${sample_id}/${sample_id}_phased.vcf.gz \
 ${sample_id}_clip.bam
 
 # Index haplotagged bamfile
