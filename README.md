@@ -107,7 +107,7 @@ samtools index ./vcf/${sample_id}/${sample_id}_haplotagged.bam
 
 ```
 
-# 6. For a gene of interest (e.g. _VRN2a_), cluster reads from each haplotype
+6. For a gene of interest (e.g. _VRN2a_), cluster reads from each haplotype
 ```
 # make directory for each gene with sub-directory for each sample
 mkdir -p ./VRN2a/${sample_id}/tmp
