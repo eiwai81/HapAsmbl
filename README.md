@@ -118,7 +118,7 @@ mkdir -p ./${target}/${sample_id}/tmp
 my_awk=$(echo 'BEGIN {OFS = "\t"} /^#/ {print} !/^#/ && $4 ~ var {print}')
 
 cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
-| awk -v var=VRN2a '$my_awk' > ./VRN2a/${sample_id}/tmp/${sample_id}_VRN2a.haplotags.tsv" 
+| awk -v var=VRN2a '$my_awk' > ./${target}/${sample_id}/tmp/${sample_id}_${target}.haplotags.tsv" 
 
 ```
 7. Read Splitting
