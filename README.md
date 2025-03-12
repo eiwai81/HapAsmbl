@@ -4,7 +4,7 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 All packages (and versions) can be installed using `micromamba` as shown below.
 ```bash
 # Create environment
-micromamba create -n hapasm
+micromamba create --name hapasm
 
 # Activate environment
 micromamba activate hapasm
