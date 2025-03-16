@@ -10,7 +10,7 @@ micromamba create --name hapasm
 micromamba activate hapasm
 
 # Install packages
-micromamba install minimap2 clair3 spoa pysam pandas parallel seqkit seqtk bbmap filtlong=0.2.1 porechop=0.2.4 -y
+micromamba install minimap2 clair3 spoa pysam pandas parallel seqkit seqtk bbmap bcftools filtlong=0.2.1 porechop=0.2.4 -y
 pip install duplex_tools
 
 ```
