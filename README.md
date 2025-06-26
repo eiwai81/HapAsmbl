@@ -129,7 +129,8 @@ cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
 
     * The *${sample_id}_VRN2a.haplotags.tsv* file will be empty, so it is assumed this sample is **HOM_REF**. 
 
-    * In this case, first get alignments of only VRN2a the haplotagged bam. Then get the read ids from this bam file as shown below:
+    * In this case, first get alignments of only VRN2a in the haplotagged bam.
+    * Then get the read ids from this bam file as shown below:
 
      ```bash
      # Specify target region
