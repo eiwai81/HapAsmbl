@@ -180,7 +180,7 @@ mkdir -p cluster_reads
 
 target="VRN2a"
 
-# -r specifies region or name of flowering gene
+# -r specifies the target region or name of flowering gene
 # -b specifies barcode identifier or sample name
 # -o specifies output directory to put reads from a haplotype
 
