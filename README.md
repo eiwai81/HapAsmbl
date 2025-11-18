@@ -1,5 +1,15 @@
 # HapAsmbl (Haplotype Assembly)
 Protocol for assembling alleles from multilocus long-read amplicon sequence data. This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
+
+>**R9.4.1 versus R10.4.1 LRAS data:**
+>
+>By default, this workflow (and accompanying script) uses the `r941_prom_sup_g5014 model` provided with Clair3 for R9.4.1 datasets.
+>For users working with R10.4.1 LRAS data, you are encouraged to set the model path for Clair3 in the variant calling step to:
+>```bash
+>model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500")
+>```
+>when going through the workflow, or modify **line 72** of the `run_hapasmbl.sh` script to use the `r1041_e82_400bps_sup_v500` model instead.
+
 ## Installation of packages using `micromamba`
 All packages (and versions) can be installed using `micromamba` as shown below.
 ```bash
