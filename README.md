@@ -22,7 +22,7 @@ micromamba activate hapasm
 # Install packages
 micromamba install minimap2 clair3 spoa racon pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
 
-```bash
+```
 ## Pipeline: step-by-step
 1. Set input variables
 ```bash
