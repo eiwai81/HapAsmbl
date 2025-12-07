@@ -169,7 +169,7 @@ cat ./vcf/${sample_id}/${sample_id}_haplotags.tsv \
 
    **Case 3 - Sample is heterozygous for alternate allele (GT=0/1):**
 
-   * The halotype column in the _${sample_id}_VRN2a.haplotags.tsv_ file contains either H1 or H2, which represent the haplotype information of each read. 
+   * The halotype column in the *${sample_id}_VRN2a.haplotags.tsv* file contains either H1 or H2, which represent the haplotype information of each read. 
 
    * In this case, the  `whatshap split` program is used to get the read haplotypes from the sample fastq file as shown below.
 
