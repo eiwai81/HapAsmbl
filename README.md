@@ -117,7 +117,7 @@ samtools index ./vcf/${sample_id}/${sample_id}_haplotagged.bam
 ```
 
 6. For a gene of interest (e.g. _VRN2a_), cluster reads from each haplotype
-```
+```bash
 target="VRN2a"
 
 # make directory for each gene with sub-directory for each sample
@@ -229,13 +229,13 @@ seqtk trimfq -b 10 -e 10 ${sample_id}_${target}.h2.fasta > ${sample_id}_${target
 
 #### (OPTIONAL) Using script and sample files provided
 To run with one example data (e.g. F10):
-```
+```bash
 bash ./run_hapasmbl.sh -r ./reference/ref.fasta -f ./fastqs/F10_VRN2a_FT3.fq.gz -o results_test -b F10 -t 8
 ```
 - Final assemblies of VRN2a are located in `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h1.fasta` and `results_test/per_gene/VRN2a/F10/assm/F10.VRN2a.h2.fasta`.
 
 To run on multiple samples (e.g. 2 samples):
-```
+```bash
 parallel -j 1 echo "{} >> sample_ids.txt" ::: F10 F12
 
 cat ./sample_ids.txt | parallel -j 1 "bash ./run_hapasmbl.sh -r ./ref/${reference} -f ./fastqs/{1}_VRN2a_FT3.fq.gz -o results_test -b {1} -t 8"
