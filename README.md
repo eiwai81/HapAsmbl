@@ -15,10 +15,10 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 * Packages required to run the HapAsmbl protocol can be installed as shown below.
 ```bash
 # Create environment
-mamba create --name hapasm
+mamba create --name hapasmbl
 
 # Activate environment
-mamba activate hapasm
+mamba activate hapasmbl
 
 # Install packages
 mamba install minimap2 clair3 spoa racon pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
