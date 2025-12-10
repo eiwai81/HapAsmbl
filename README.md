@@ -10,17 +10,18 @@ Protocol for assembling alleles from multilocus long-read amplicon sequence data
 >```
 >when going through the workflow, or modify **line 72** of the `run_hapasmbl.sh` script to use the `r1041_e82_400bps_sup_v500` model instead.
 
-## Installation of packages using `micromamba`
-All packages (and versions) can be installed using `micromamba` as shown below.
+## Installation of packages using `miniforge`
+* Instructions for installing `miniforge` can be found on Jan Kirenz's codelabs (https://kirenz.github.io/codelabs/codelabs/miniforge-setup/#0).
+* Packages required to run the HapAsmbl protocol can be installed as shown below.
 ```bash
 # Create environment
-micromamba create --name hapasm
+mamba create --name hapasm
 
 # Activate environment
-micromamba activate hapasm
+mamba activate hapasm
 
 # Install packages
-micromamba install minimap2 clair3 spoa racon pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
+mamba install minimap2 clair3 spoa racon pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
 
 ```
 ## Pipeline: step-by-step
