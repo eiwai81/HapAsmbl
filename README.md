@@ -21,7 +21,7 @@ mamba create --name hapasmbl
 mamba activate hapasmbl
 
 # Install packages
-mamba install minimap2 clair3 spoa racon pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
+mamba install minimap2 clair3 spoa pysam pandas parallel seqkit seqtk bbmap bcftools flye -y
 
 ```
 ## Pipeline: step-by-step
