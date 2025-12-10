@@ -37,7 +37,7 @@ threads=4
 # Map with Minimap2
 minimap2 --MD -a -x map-ont ${reference} ${fastq_file} | samtools sort > ${sample_id}_tmp.bam
 
-# Remove unmapped reads and concatemers
+# Remove unmapped reads and concatenated/fused/ligated amplicons
 ## clipfilter=10 discards reads with more than 10 soft-clipped bases
 samtools view -h -F 2308 ${sample_id}_tmp.bam \
 | reformat.sh clipfilter=10 in=stdin.bam out=stdout.bam \
