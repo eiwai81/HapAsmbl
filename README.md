@@ -1,5 +1,5 @@
 # HapAsmbl (Haplotype Assembly)
-Protocol for assembling alleles from multilocus long-read amplicon sequence data. This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
+Protocol for assembling alleles from single- or multi-locus long-read amplicon sequence (LRAS) data generated using Oxford Nanopore sequencing (ONT). This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for ONT LRAS data of any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
 
 >**R9.4.1 versus R10.4.1 LRAS data:**
 >
