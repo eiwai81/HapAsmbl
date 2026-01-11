@@ -39,9 +39,9 @@ seq_ids=$(echo "${working_dir}/seq_ids.txt")
 
 # Check if $seq_ids exists and is not an empty file,
 if [ -f "$seq_ids" ] && [ -s "$seq_ids" ]; then
-    echo "seq_ids.txt does not exist."
+    echo "seq_ids.txt is not empty."
 else
-    echo "Error: seq_ids.txt does not exist."
+    echo "Error: seq_ids.txt cannot be empty."
     exit 1
 fi
 
@@ -81,8 +81,10 @@ platform="ont"
 
 # Set model for variant calling
 if [[ "${model_config}" == "R9.4.1" ]]; then
+	# Set model for R9.4.1 data
     model_path=$(echo "${CONDA_PREFIX}/bin/models/r941_prom_sup_g5014")
 elif [[ "${model_config}" == "R10.4.1" ]]; then
+	# Set model for R10.4.1 data
     model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500")
 else
     echo "Error: Invalid flow cell chemistry. Please use -m R9.4.1 for R9.4.1 LRAS data or -m R10.4.1 for R10.4.1 LRAS data."
@@ -173,8 +175,10 @@ ${fastq_file}"
 #-------- 5. Assemble consensus from read clusters (spoa) and polish consensus (flye) ----------
 ## Set flag for Flye's read-based polishing depending on flow cell chemistry
 if [[ "${model_config}" == "R9.4.1" ]]; then
+	# Use --nano-raw for read-based Flye polishing of R10.4.1 ONT LRAS data
     read_qual=$(echo "--nano-raw")
 elif [[ "${model_config}" == "R10.4.1" ]]; then
+	# Use --nano-hq for read-based Flye polishing of R10.4.1 ONT LRAS data
     read_qual=$(echo "--nano-hq")
 else
     echo "Error: Invalid model flag. Please use -m R9.4.1 for R9.4.1 data or -m R10.4.1 for R10.4.1 LRAS data."
