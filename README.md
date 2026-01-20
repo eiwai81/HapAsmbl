@@ -3,12 +3,9 @@ Protocol for assembling alleles from single- or multi-locus long-read amplicon s
 
 >**R9.4.1 versus R10.4.1 LRAS data:**
 >
->By default, this workflow (and accompanying script) uses the `r941_prom_sup_g5014 model` provided with Clair3 for R9.4.1 datasets.
->For users working with R10.4.1 LRAS data, you are encouraged to set the model path for Clair3 in the variant calling step to:
->```bash
->model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500")
->```
->when going through the workflow, or modify **line 72** of the `run_hapasmbl.sh` script to use the `r1041_e82_400bps_sup_v500` model instead.
+>This workflow (and accompanying script) uses different configurations for variant calling and consensus polishing steps.
+>For R9.4.1 LRAS datasets, `Clair3` uses the `r941_prom_sup_g5014` model for variant calling while `flye polish` uses `--nano-raw` for draft consensus polishing.
+>For R10.4.1 LRAS datasets, `Clair3` uses the `r1041_e82_400bps_sup_v500` model for variant calling while `flye polish` uses `--nano-hq` for draft consensus polishing step.
 
 ## Installation of packages using `miniforge`
 * Instructions for installing `miniforge` can be found on Jan Kirenz's codelabs (https://kirenz.github.io/codelabs/codelabs/miniforge-setup/#0).
@@ -57,7 +54,8 @@ mkdir -p vcf
 
 # Set clair3 parameters
 platform="ont"
-model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014")
+model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014") # For R9.4.1 LRAS data
+#model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500") # Uncomment for R10.4.1 LRAS data 
 
 # run clair3
 ## options --var_pct_full=1 and --ref_pct_full=1 are recommended for amplicon sequence data
