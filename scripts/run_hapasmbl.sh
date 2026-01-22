@@ -175,7 +175,7 @@ ${fastq_file}"
 #-------- 5. Assemble consensus from read clusters (spoa) and polish consensus (flye) ----------
 ## Set flag for Flye's read-based polishing depending on flow cell chemistry
 if [[ "${model_config}" == "R9.4.1" ]]; then
-	# Use --nano-raw for read-based Flye polishing of R10.4.1 ONT LRAS data
+	# Use --nano-raw for read-based Flye polishing of R9.4.1 ONT LRAS data
     read_qual=$(echo "--nano-raw")
 elif [[ "${model_config}" == "R10.4.1" ]]; then
 	# Use --nano-hq for read-based Flye polishing of R10.4.1 ONT LRAS data
