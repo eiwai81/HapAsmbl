@@ -54,8 +54,9 @@ mkdir -p vcf
 
 # Set clair3 parameters
 platform="ont"
+
+# For R10.4.1 LRAS data, use model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500")
 model_path=$(echo "$CONDA_PREFIX/bin/models/r941_prom_sup_g5014") # For R9.4.1 LRAS data
-#model_path=$(echo "$CONDA_PREFIX/bin/models/r1041_e82_400bps_sup_v500") # Uncomment for R10.4.1 LRAS data 
 
 # run clair3
 ## options --var_pct_full=1 and --ref_pct_full=1 are recommended for amplicon sequence data
@@ -215,6 +216,7 @@ spoa --strand-ambiguous --algorithm 2 cluster_reads/${sample_id}_${target}.h2.fa
 
 9. Polish consensus with reads - `flye`
 ```bash
+# For R10.4.1 data, change '--nano-raw' to '--nano-hq'
 flye --polish-target ${sample_id}_${target}.h1.con.fasta --nano-raw cluster_reads/${sample_id}_${target}.h1.fastq.gz --iterations 5 --out-dir ./
 flye --polish-target ${sample_id}_${target}.h2.con.fasta --nano-raw cluster_reads/${sample_id}_${target}.h2.fastq.gz --iterations 5 --out-dir ./
 ```
