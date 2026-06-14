@@ -1,6 +1,10 @@
 # HapAsmbl (Haplotype Assembly)
 Protocol for assembling alleles from single- or multi-locus long-read amplicon sequence (LRAS) data generated using Oxford Nanopore sequencing (ONT). This was originally developed for haplotyping flowering time genes in perennial ryegrass but it can be adapted for ONT LRAS data of any diploid species. It is reference-aided which implies that there is a reference sequence for the amplicons of interest.
 
+If you use HapAsmbl in your research, please cite:
+
+Fakoya, A. O., A. Chen, R. P. Herridge, R. C. Macknight, and L. R. Brownfield. 2026. HapAsmbl: A reference-aided pipeline for assembling haplotypes in Nanopore amplicon sequence data of polymorphic populations. Applications in Plant Sciences 14(3): e70062. https://doi.org/10.1002/aps3.70062
+
 >**R9.4.1 versus R10.4.1 LRAS data:**
 >
 >This workflow (and accompanying script) uses different configurations for variant calling and consensus polishing steps.
