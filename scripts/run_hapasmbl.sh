@@ -112,11 +112,12 @@ run_clair3.sh \
 --snp_min_af=0.01 \
 --no_phasing_for_fa \
 --use_whatshap_for_final_output_phasing \
+--enable_variant_calling_at_sequence_head_and_tail \
 --remove_intermediate_dir
 
 # ---------- 3.1 Phase variants - whatshap ---------------
 whatshap phase \
--o ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_phased.vcf.gz \
+-o ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_tmp.vcf.gz \
 --reference ${reference} \
 --tag HP \
 ${hapasm_dir}/vcf/${barcode_id}/merge_output.vcf.gz \
@@ -127,8 +128,15 @@ ${hapasm_dir}/bam/${barcode_id}/${barcode_id}_clip.bam \
 --internal-downsampling 23 \
 --distrust-genotypes
 
+# FIX: Remove variants in heterozygous where HP tage is missing, which leads to NoneType Error in haplotag step
+bcftools view -i 'GT="het" && FMT/HP!="."' ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_tmp.vcf.gz \
+-Oz -o ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_phased.vcf.gz
+
 # Index phased compressed vcf.gz file
 tabix -f -p vcf ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_phased.vcf.gz
+
+# Housekeeping
+rm -rf ${hapasm_dir}/vcf/${barcode_id}/${barcode_id}_tmp.vcf.gz
 
 #------- 3.2 Haplotag reads in bamfile using phased VCF and ----------------------------
 #-------     generate list of reads belonging to each haplotype group
